@@ -1,27 +1,31 @@
-let reservas = [];
-
-const formulario = document.getElementById('formulario');
-formulario.addEventListener('submit', (event) => {
+document.getElementById("formulario").addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const id = document.getElementById('id').value;
-    const email = document.getElementById('email').value;
-    const name = document.getElementById('name').value;
-    const fechaHora = document.getElementById('fechaHora').value;
-    const laboratory = document.getElementById('laboratory').value;
-
+    const formData = new FormData(event.target);
     const reserva = {
-        id,
-        email,
-        name,
-        fechaHora,
-        laboratory
+        id: formData.get("id"),
+        email: formData.get("email"),
+        name: formData.get("name"),
+        fechaHora: formData.get("fechaHora"),
+        laboratory: formData.get("laboratory"),
     };
 
-    reservas.push(reserva);
+    try {
+        const response = await fetch("https://cvqgh7rcp0.execute-api.us-east-2.amazonaws.com/labAccess", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(reserva),
+        });
 
-    const listaReservas = document.getElementById('reservas');
-    const li = document.createElement('li');
-    li.textContent = JSON.stringify(reserva);
-    listaReservas.appendChild(li);
+        if (response.ok) {
+            alert("Reservación exitosa");
+        } else {
+            alert("Error en la reservación");
+        }
+    } catch (error) {
+        console.error(error);
+        alert("Error en la reservación");
+    }
 });
